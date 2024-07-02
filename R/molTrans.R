@@ -2,10 +2,10 @@
 #' @title Molecular Transformation Analysis
 #' @description This function analyzes molecular data to identify potential transformations between molecular peaks based on their mass differences. 
 #' It supports both dataset-level and sample-level analysis, enabling the examination of transformations within a comprehensive dataset or within individual samples respectively.
-#' @param mol.data Data frame containing molecular data where rows represent different samples or conditions, and columns represent individual molecules. Default: mol.data
-#' @param mol.trait Data frame containing molecular trait data such as mass or other properties associated with each molecule. Default: mol.trait
-#' @param error.term Numeric value representing the allowable error margin in the mass difference calculations. Default: 1e-05
-#' @param type Character string specifying the level of analysis; accepts "Dataset" for a comprehensive analysis across all samples, or "Sample" for an analysis focused on individual samples. Default: 'Dataset'
+#' @param mol.data Data frame containing molecular data where rows represent different samples or conditions, and columns represent individual molecules. Default: mol.data.
+#' @param mol.trait Data frame containing molecular trait data such as mass or other properties associated with each molecule. Default: mol.trait.
+#' @param error.term Numeric value representing the allowable error margin in the mass difference calculations. Default: 1e-05.
+#' @param type Character string specifying the level of analysis; accepts "Dataset" for a comprehensive analysis across all samples, or "Sample" for an analysis focused on individual samples. Default: 'Dataset'.
 #' @return A list containing two elements: `Peak.2.peak`, a data frame of peak-to-peak relationships highlighting the transformations, and `Peak.profile.dataset` or `Peak.profile.sample` depending on the analysis type, which summarizes the number of transformations each peak is involved in.
 #' @rdname molTrans
 #' @export

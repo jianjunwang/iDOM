@@ -7,13 +7,13 @@
 molTrans(mol.data, mol.trait, error.term = 1e-05, type = "Dataset")
 }
 \arguments{
-\item{mol.data}{Data frame containing molecular data where rows represent different samples or conditions, and columns represent individual molecules. Default: mol.data}
+\item{mol.data}{Data frame containing molecular data where rows represent different samples or conditions, and columns represent individual molecules. Default: mol.data.}
 
-\item{mol.trait}{Data frame containing molecular trait data such as mass or other properties associated with each molecule. Default: mol.trait}
+\item{mol.trait}{Data frame containing molecular trait data such as mass or other properties associated with each molecule. Default: mol.trait.}
 
-\item{error.term}{Numeric value representing the allowable error margin in the mass difference calculations. Default: 1e-05}
+\item{error.term}{Numeric value representing the allowable error margin in the mass difference calculations. Default: 1e-05.}
 
-\item{type}{Character string specifying the level of analysis; accepts "Dataset" for a comprehensive analysis across all samples, or "Sample" for an analysis focused on individual samples. Default: 'Dataset'}
+\item{type}{Character string specifying the level of analysis; accepts "Dataset" for a comprehensive analysis across all samples, or "Sample" for an analysis focused on individual samples. Default: 'Dataset'.}
 }
 \value{
 A list containing two elements: \code{Peak.2.peak}, a data frame of peak-to-peak relationships highlighting the transformations, and \code{Peak.profile.dataset} or \code{Peak.profile.sample} depending on the analysis type, which summarizes the number of transformations each peak is involved in.
