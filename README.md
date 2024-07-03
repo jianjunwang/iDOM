@@ -1,13 +1,22 @@
 
 # iDOM
 
-Ecological networks of dissolved organic matter and microorganisms under
-global change.
+Statistical analysis of dissolved organic matter based on
+high-resolution mass spectrometry
 
 ## About
 
-The package includes functions for analyzing the thermal responses,
-assembly processes, transformation and microbial associations of DOM.
+iDOM is a multifunctional tool that facilitates basic analyses, such as
+the calculation of molecular traits, the assignment of molecular
+classes, and the evaluation of chemical diversity and dissimilarity. It
+also includes functions for advanced analyses to quantify the assembly
+processes of DOM assemblages, the effect of molecular dark matter on DOM
+molecular interactions, and the associations between DOM molecules and
+microbial taxa.
+
+We expect that iDOM will serve as a comprehensive pipeline for DOM
+statistical analyses and bridge the gap between chemical
+characterization and ecological interpretation.
 
 Package maintainer: Jianjun Wang(<jjwang@niglas.ac.cn>)
 
