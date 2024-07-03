@@ -4,16 +4,16 @@
 \alias{commDendro}
 \title{Generate Molecular Dendrogram}
 \usage{
-commDendro(mol.trait, type, peak.2.peak = peak.2.peak, trait_col)
+commDendro(mol.trait, type, trait_col, peak.2.peak = NULL)
 }
 \arguments{
 \item{mol.trait}{A data frame containing molecular traits which must include a column for molecular formula ('MolForm') and may include other specified traits.}
 
 \item{type}{A character string specifying the type of dendrogram to generate: 'MCD' for Molecular Characterization Dendrogram, 'TD' for Transformation Dendrogram, and 'TWCD' for Transformed Weighted Characterization Dendrogram.}
 
-\item{peak.2.peak}{An optional data frame of peak-to-peak relationships, defaulting to \code{peak.2.peak}. It is used in the TD and TWCD methods to determine the connections based on transformations.}
+\item{trait_col}{A vector of character strings specifying the names of molecular traits to use in the analysis.}
 
-\item{trait.names}{A vector of character strings specifying the names of molecular traits to use in the analysis. Default: c("Mass", "C", "kdefect.CH2", "OtoC_ratio", "HtoC_ratio", "NtoC_ratio", "PtoC_ratio", "NtoP_ratio", "StoC_ratio", "AI_Mod", "DBE", "DBE_O", "DBE_AI", "GFE", "NOSC", "Y_met")}
+\item{peak.2.peak}{An optional data frame of peak-to-peak relationships, defaulting to \code{peak.2.peak}. It is used in the TD and TWCD methods to determine the connections based on transformations. Default: NULL}
 }
 \value{
 A dendrogram object representing the relationships among molecules.

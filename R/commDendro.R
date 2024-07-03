@@ -3,20 +3,20 @@
 #' @description This function analyzes molecular traits or transformation data to generate dendrograms. It supports multiple methods for dendrogram generation, including molecular characterization dendrograms (MCD), transformation dendrograms (TD), and transformed weighted characterization dendrograms (TWCD).
 #' @param mol.trait A data frame containing molecular traits which must include a column for molecular formula ('MolForm') and may include other specified traits.
 #' @param type A character string specifying the type of dendrogram to generate: 'MCD' for Molecular Characterization Dendrogram, 'TD' for Transformation Dendrogram, and 'TWCD' for Transformed Weighted Characterization Dendrogram.
-#' @param peak.2.peak An optional data frame of peak-to-peak relationships, defaulting to `peak.2.peak`. It is used in the TD and TWCD methods to determine the connections based on transformations.
-#' @param trait.names A vector of character strings specifying the names of molecular traits to use in the analysis. Default: c("Mass", "C", "kdefect.CH2", "OtoC_ratio", "HtoC_ratio", "NtoC_ratio", "PtoC_ratio", "NtoP_ratio", "StoC_ratio", "AI_Mod", "DBE", "DBE_O", "DBE_AI", "GFE", "NOSC", "Y_met")
+#' @param trait_col A vector of character strings specifying the names of molecular traits to use in the analysis.
+#' @param peak.2.peak An optional data frame of peak-to-peak relationships, defaulting to `peak.2.peak`. It is used in the TD and TWCD methods to determine the connections based on transformations. Default: NULL
 #' @return A dendrogram object representing the relationships among molecules.
-#' @rdname generate_dendrogram
+#' @rdname commDendro
 #' @export 
 
-commDendro <- function(mol.trait, type, peak.2.peak = peak.2.peak, trait_col) {
-  options(digits = 10)
+commDendro <- function(mol.trait, type, trait_col, peak.2.peak = NULL) {
   
   library(igraph)
-  library(phangorn) # For tree based functions
-  library(ggtree)   # For tree visualization
-  library(vegan)    # For vegdist
+  library(phangorn)
+  library(vegan)
   library(picante)
+  
+  options(digits = 10)
   
   # Removing peaks that have no formula assignments
   mol.trait <- mol.trait[!is.na(mol.trait$MolForm),]
@@ -26,27 +26,41 @@ commDendro <- function(mol.trait, type, peak.2.peak = peak.2.peak, trait_col) {
     mol.trait <- mol.trait[mol.trait$C13 <= 0,]
   }
   
-  # Check if necessary columns exist
-  if (!(trait_col %in% colnames(mol.trait))) {
-    stop(paste("Column", HtoC_ratio, "not found in the mol.trait"))
+  # Find column names that are not in mol.trait
+  missing_cols <- trait_col[!(trait_col %in% colnames(mol.trait))]
+  
+  # Check if there are any missing column names
+  if (length(missing_cols) > 0) {
+    cat("The following columns are not in mol.trait:\n")
+    cat(missing_cols, sep = "\n")
+  } else {
+    cat("All columns are in mol.trait\n")
   }
   
-  Mol.Info = mol.trait[,trait.names, drop = F]
+  Mol.Info = mol.trait[, trait_col, drop = F]
   
   if (type == "MCD") {
     
     # Pairwise distance between peaks
     Mol.Info = as.data.frame(apply(Mol.Info, 2, scale), row.names = row.names(Mol.Info)) # Generating a distance matrix based upon the provided parameters
     
-    # Create tree
-    tree = as.phylo(hclust(vegdist(Mol.Info, "euclidean", na.rm = T), "average")) # Converting the distance matrix into a tree
+    # Converting the distance matrix into a tree
+    tree = as.phylo(hclust(vegdist(Mol.Info, "euclidean"), "average"))
     
   } else if (type == "TD") {
     
-    peak.2.peak <- peak.2.peak %>% 
-      select(peak.x, peak.y, Trans.name) %>% 
-      rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
-      mutate(weight = 1)
+    if (is.null(peak.2.peak)) {
+      peak.trans <- molTrans(mol.data = mol.data, mol.trait = mol.trait)
+      peak.2.peak <- peak.trans$Peak.2.peak %>% 
+        select(peak.x, peak.y, Trans.name) %>% 
+        rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
+        mutate(weight = 1)
+    } else {
+      peak.2.peak <- peak.2.peak %>% 
+        select(peak.x, peak.y, Trans.name) %>% 
+        rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
+        mutate(weight = 1)
+    }
 
     # Creating the network
     net = graph_from_data_frame(d = peak.2.peak, directed = F)
@@ -69,20 +83,27 @@ commDendro <- function(mol.trait, type, peak.2.peak = peak.2.peak, trait_col) {
     
   } else if (type == "TWCD") {
     
-    # Pairwise distance between peaks
-    Mol.Info = as.data.frame(apply(Mol.Info, 2, scale), row.names = row.names(Mol.Info)) # Generating a distance matrix based upon the provided parameters
-    mol.dist = as.matrix(vegdist(Mol.Info, "euclidean", na.rm = T))
+    ### Pairwise molecular distance between peaks
+    Mol.Info = as.data.frame(apply(Mol.Info, 2, scale), row.names = row.names(Mol.Info))
+    # Generating a distance matrix based upon the provided parameters
+    mol.dist = as.matrix(vegdist(Mol.Info, "euclidean"))
     
-    # 
-    peak.2.peak <- peak.2.peak %>% 
-      select(peak.x, peak.y, Trans.name) %>% 
-      rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
-      mutate(weight = 1)
+    if (is.null(peak.2.peak)) {
+      peak.trans <- molTrans(mol.data = mol.data, mol.trait = mol.trait)
+      peak.2.peak <- peak.trans$Peak.2.peak %>% 
+        select(peak.x, peak.y, Trans.name) %>% 
+        rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
+        mutate(weight = 1)
+    } else {
+      peak.2.peak <- peak.2.peak %>% 
+        select(peak.x, peak.y, Trans.name) %>% 
+        rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
+        mutate(weight = 1)
+    }
     
     ### Determining transformation distance
     # Creating the network
     net = graph_from_data_frame(d = peak.2.peak, directed = F)
-    # rm("peak.2.peak", "num.trans")
     
     # The distances command is much better than the similarity measurement
     net.dist = distances(net)
