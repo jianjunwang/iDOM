@@ -1,7 +1,7 @@
 
 # iDOM
 
-Statistical analysis of dissolved organic matter based on
+Statistical analysis of dissolved organic matter characterized by
 high-resolution mass spectrometry
 
 ## About
