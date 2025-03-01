@@ -57,9 +57,9 @@ network-level specialization of all interacting trophic levels in
 DOM-microbe bipartite networks, including full, negative and positive
 networks.
 
-[iCTR](https://www.nature.com/articles/s41467-024-44813-2): Calculates
+[iCER](https://www.nature.com/articles/s41467-024-44813-2): Calculates
 the indicator of compositional-level environmental response to assess
-the thermal response of DOM. *The code will be updated soon*.
+the thermal response of DOM.
 
 ## References
 
