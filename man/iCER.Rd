@@ -25,7 +25,7 @@ iCER(
 
 \item{Temp_num}{The number of temperature levels to randomly select when generating independent data sets.}
 
-\item{end_n}{Ensures that each sample appears at least this many times in the unselected list during randomization. Default: 10.}
+\item{end_n}{Ensures that each sample appears at least this many times in the iCER datasets during random data partitioning. Increasing this value will result in a greater number of permutations. Default: 10.}
 
 \item{cutoff}{The threshold for retaining molecules observed in a specified proportion of the samples within the MER dataset. Molecules present in less than this proportion of samples will be excluded from the MER calculation. Default: 0.3.}
 
@@ -36,11 +36,12 @@ iCER(
 \item{p_value_threshold}{The significance level for determining whether a molecule’s correlation is considered significant. Default: 0.05}
 }
 \value{
-A list containing the following elements:
+A list containing the following components:
 \itemize{
-\item \code{CER_all_out}: A data frame of iCER values for all molecules (if \code{significant_only = FALSE}).
-\item \code{CER_sig_out}: A data frame of iCER values for molecules with significant correlations (if \code{significant_only = TRUE}).
-\item \code{CER_mean}: A data frame with the mean iCER value for each sample.
+\item \code{MER}: A data frame of MER values for molecules.
+\item \code{CER_all_out}: A data frame of iCER values calculated from all molecules (if \code{significant_only = FALSE}).
+\item \code{CER_sig_out}: A data frame of iCER values calculated from molecules with significant MERs (if \code{significant_only = TRUE}).
+\item \code{CER_mean}: A data frame of the mean iCER value for each sample.
 }
 }
 \description{
