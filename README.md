@@ -88,3 +88,8 @@ the Link between Organic Matter Functional Traits and Composition.
 F Meng, A Hu, K-S Jang, and J Wang. 2024. iDOM: Statistical analysis of
 dissolved organic matter based on high-resolution mass spectrometry.
 ***Research Square***. <https://doi.org/10.21203/rs.3.rs-4660944/v1>
+
+F Meng, A Hu, K-S Jang, and J Wang. 2025. iDOM: Statistical analysis of 
+dissolved organic matter characterized by high‐resolution mass spectrometry. 
+***mLife***. <https://doi.org/10.1002/mlf2.70002>.
+
