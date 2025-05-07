@@ -101,7 +101,7 @@ H2 <- function(mol.data, micro.data, occu.rate = 0.3, sparcc.R = NULL, sparcc.R.
       site.Micro <- site_data[, colnames(site_data) %in% colnames(micro.data), drop = F];dim(site.Micro)
       site.DOM <- site_data[, colnames(site_data) %in% colnames(mol.data), drop = F];dim(site.DOM)
       
-      adj.cor.int.site = adj.cor.int.class[rownames(adj.cor.int.class) %in% colnames(site.DOM),colnames(adj.cor.int.class) %in% colnames(site.Bac)];dim(adj.cor.int.site)
+      adj.cor.int.site = adj.cor.int.class[rownames(adj.cor.int.class) %in% colnames(site.DOM),colnames(adj.cor.int.class) %in% colnames(site.Micro)];dim(adj.cor.int.site)
       
       nulls.site = list()
       
