@@ -52,7 +52,7 @@ processes in the assembly of DOM assemblages.
 effect of molecular dark matter on DOM assemblages by constructing
 co-occurrence networks based on the presence and absence of dark matter.
 
-[H2](https://doi.org/10.1101/2021.08.12.456177): Calculates the
+[H2](https://www.nature.com/articles/s41467-022-31251-1): Calculates the
 network-level specialization of all interacting trophic levels in
 DOM-microbe bipartite networks, including full, negative and positive
 networks.
