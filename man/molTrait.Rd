@@ -17,3 +17,8 @@ A data frame of the molecular traits
 \description{
 This function performs a comprehensive analysis of molecular traits from a given report
 }
+\examples{
+\dontrun{
+report = read.csv(file = list.files(path = ".", pattern = "*Report.csv", full.names = T))
+mol.trait = molTrait(report, ver = "1.1.0")}
+}
