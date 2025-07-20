@@ -94,4 +94,4 @@ Photochemical processes drive thermal responses of dissolved organic matter in t
 
 L Han, A Hu, H L Mzuka, X Chen, J Shen and J Wang. 2025.
 Molecular properties of dissolved organic matter across Earth systems: A meta-analysis.
-***Journal of Earth Science*** Accepted. <https://doi.org/10.1007/s12583-024-0061-9>. Preprint version: <https://doi.org/10.22541/essoar.171224462.20544536/v1>.
+***Journal of Earth Science*** Accepted. <https://doi.org/10.1007/s12583-024-0061-9>. Preprint version: <https://doi.org/10.22541/essoar.171224462.20544536/v1>
