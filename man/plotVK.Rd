@@ -13,7 +13,7 @@ plotVK(data, HtoC_ratio, OtoC_ratio, title = "Van Krevelen Diagram")
 
 \item{OtoC_ratio}{The name of the column in \code{data} containing O/C ratios.}
 
-\item{title}{Title of the plot. Default: 'Van Krevelen Diagram'}
+\item{title}{Title of the plot. Default: 'Van Krevelen Diagram'.}
 }
 \value{
 A ggplot object representing the Van Krevelen diagram.
