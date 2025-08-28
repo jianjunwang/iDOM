@@ -4,7 +4,7 @@
 #' @param data A data frame containing the H/C ratios and O/C ratios.
 #' @param HtoC_ratio The name of the column in `data` containing H/C ratios.
 #' @param OtoC_ratio The name of the column in `data` containing O/C ratios.
-#' @param title Title of the plot. Default: 'Van Krevelen Diagram'
+#' @param title Title of the plot. Default: 'Van Krevelen Diagram'.
 #' @return A ggplot object representing the Van Krevelen diagram.
 #' @details This function creates a scatter plot of H/C vs O/C ratios.
 #' @rdname plotVK
@@ -20,7 +20,7 @@ plotVK <- function(data, HtoC_ratio, OtoC_ratio, title = "Van Krevelen Diagram")
   }
   
   # Create the base plot
-  p <- ggplot(data, aes_string(x = OtoC_ratio, y = HtoC_ratio))
+  p <- ggplot(data, aes(x = OtoC_ratio, y = HtoC_ratio))
   
   # Add points and theme
   p <- p + geom_point() +
