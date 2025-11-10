@@ -23,7 +23,7 @@ iCER(
 
 \item{prop}{The proportion of the dataset to be used for MER (Molecule-specific thermal responses) calculation. This controls how much of the original dataset is sampled for analysis. Default: 0.8.}
 
-\item{Temp_num}{The number of temperature levels to randomly select when generating independent data sets.}
+\item{Temp_num}{The number of temperature levels randomly selected in each permutation.}
 
 \item{end_n}{Ensures that each sample appears at least this many times in the iCER datasets during random data partitioning. Increasing this value will result in a greater number of permutations. Default: 10.}
 
@@ -59,6 +59,5 @@ if(interactive()){
 }
 }
 \seealso{
-\code{\link[reshape2]{melt}}
 \code{\link[FD]{functcomp}}
 }

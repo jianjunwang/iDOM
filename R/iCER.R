@@ -4,7 +4,7 @@
 #' @param data_ra A data frame containing the relative abundance of molecules, where rows represent samples and columns represent different molecules.
 #' @param envi A data frame containing environmental variables associated with each sample. The rows should correspond to the samples in `data_ra`, and it should include the variable(s) specified in `vars_list`.
 #' @param prop The proportion of the dataset to be used for MER (Molecule-specific thermal responses) calculation. This controls how much of the original dataset is sampled for analysis. Default: 0.8.
-#' @param Temp_num The number of temperature levels to randomly select when generating independent data sets.
+#' @param Temp_num The number of temperature levels randomly selected in each permutation.
 #' @param end_n Ensures that each sample appears at least this many times in the iCER datasets during random data partitioning. Increasing this value will result in a greater number of permutations. Default: 10.
 #' @param cutoff The threshold for retaining molecules observed in a specified proportion of the samples within the MER dataset. Molecules present in less than this proportion of samples will be excluded from the MER calculation. Default: 0.3.
 #' @param vars_list The name or list of environmental variables (such as temperature) to be used in the correlation analysis. Default: 'Temperature'.
@@ -28,11 +28,9 @@
 #'  }
 #' }
 #' @seealso 
-#'  \code{\link[reshape2]{melt}}
 #'  \code{\link[FD]{functcomp}}
 #' @rdname iCER
 #' @export 
-#' @importFrom reshape2 melt
 #' @importFrom FD functcomp
 
 iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3, vars_list = "Temperature", significant_only = FALSE, p_value_threshold = 0.05) {
