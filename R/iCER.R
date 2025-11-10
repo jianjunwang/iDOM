@@ -3,19 +3,19 @@
 #' @description The iCER function calculates the Indicator of Compositional-Level Thermal Responses (iCER) based on environmental data (`envi`) and molecular relative abundance data (`data_ra`).
 #' @param data_ra A data frame containing the relative abundance of molecules, where rows represent samples and columns represent different molecules.
 #' @param envi A data frame containing environmental variables associated with each sample. The rows should correspond to the samples in `data_ra`, and it should include the variable(s) specified in `vars_list`.
-#' @param prop The proportion of the dataset to be used for MER (Molecule-specific thermal responses) calculation. This controls how much of the original dataset is sampled for analysis. Default: 0.8.
-#' @param Temp_num The number of temperature levels to randomly select when generating independent data sets.
-#' @param end_n Ensures that each sample appears at least this many times in the iCER datasets during random data partitioning. Increasing this value will result in a greater number of permutations. Default: 10.
-#' @param cutoff The threshold for retaining molecules observed in a specified proportion of the samples within the MER dataset. Molecules present in less than this proportion of samples will be excluded from the MER calculation. Default: 0.3.
-#' @param vars_list The name or list of environmental variables (such as temperature) to be used in the correlation analysis. Default: 'Temperature'.
-#' @param significant_only A boolean indicating whether to calculate iCER using only molecules with significant MERs. If set to TRUE, only molecules with significant correlations (based on `p_value_threshold`) are included. Default: FALSE.
-#' @param p_value_threshold The significance level for determining whether a molecule’s correlation is considered significant. Default: 0.05
+#' @param prop The proportion of samples selected in each permutation for MER (molecule-specific thermal response) calculation. This determines the 'MER dataset' size and affects the stability and variability of the results. Default: 0.8.
+#' @param Temp_num The number of temperature levels randomly selected in each permutation.
+#' @param end_n The minimum number of times each sample must appear in the 'iCER datasets' during random data partitioning. Increasing this value will result in a greater number of permutations. Default: 10.
+#' @param cutoff The minimum proportion of samples in the 'MER dataset' in which a molecule must appear to be retained; molecules below this cutoff are excluded from MER estimation. Default: 0.3.
+#' @param vars_list The name of environmental variables (such as 'Temperature') to be used for MER calculation. Default: 'Temperature'.
+#' @param significant_only Whether to compute iCER using only molecules with statistically significant MER values (p ≤ `p_value_threshold`). Default: FALSE.
+#' @param p_value_threshold The p-value threshold used to assess whether a molecule’s MER is statistically significant. Default: 0.05.
 #' @return A list containing the following components:
 #' \itemize{
-#'   \item `MER`: A data frame of MER values for molecules.
-#'   \item `CER_all_out`: A data frame of iCER values calculated from all molecules (if `significant_only = FALSE`).
-#'   \item `CER_sig_out`: A data frame of iCER values calculated from molecules with significant MERs (if `significant_only = TRUE`).
-#'   \item `CER_mean`: A data frame of the mean iCER value for each sample.
+#'   \item `MER`: A data frame of MER values and p-values for molecules in each permutation.
+#'   \item `iCER_all_permutation`: A data frame containing iCER, weighted variance (`iCER.var`), standard deviation (`iCER.sd`), and permutation index for each sample, computed from all molecules (if `significant_only = False`).
+#'   \item `iCER_sig_permutation`: A data frame containing iCER, weighted variance (`iCER.var`), standard deviation (`iCER.sd`), and permutation index for each sample, computed from molecules with significant MERs (if `significant_only = TRUE`).
+#'   \item `iCER`: A data frame containing the aggregated iCER results for each sample across all permutations, including the mean iCER, its weighted variance (`iCER.var`), and standard deviation (`iCER.sd`).
 #' }
 #' @examples 
 #' \dontrun{
@@ -28,12 +28,12 @@
 #'  }
 #' }
 #' @seealso 
-#'  \code{\link[reshape2]{melt}}
 #'  \code{\link[FD]{functcomp}}
+#'  \code{\link[Hmisc]{wtd.var}}
 #' @rdname iCER
 #' @export 
-#' @importFrom reshape2 melt
 #' @importFrom FD functcomp
+#' @importFrom Hmisc wtd.var
 
 iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3, vars_list = "Temperature", significant_only = FALSE, p_value_threshold = 0.05) {
   
@@ -43,37 +43,37 @@ iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3,
   library(plyr)
   library(vegan)
   library(FD)
+  library(Hmisc)
   
   # Prepare data
-  envi$cDOM.IDs <- rownames(envi)
   envi_tmp <- envi[, vars_list, drop = FALSE]
   
-  dat <- tibble(ID = envi$cDOM.IDs, Temperature = envi[, vars_list])
+  dat <- tibble(ID = rownames(envi), Temperature = envi[, vars_list])
   
   # Function to generate independent data sets
   random_ID_select <- function(dat, prop, Temp_num, end_n) {
     set.seed(12345)
     num <- round(nrow(dat) * prop)
-    ele_gra_ser <- sort(unique(dat$Temperature))
+    Temp_gra_ser <- sort(unique(dat$Temperature))
     
     samp.list <- list()
     unselect.list <- list()
     ID_num <- matrix(nrow = num)
     
     while (TRUE) {
-      ele_gra <- sort(sample(ele_gra_ser, Temp_num, replace = FALSE))
-      random_ID <- sample(which(dat$Temperature %in% ele_gra), num, replace = FALSE)
+      Temp_gra <- sort(sample(Temp_gra_ser, Temp_num, replace = FALSE))
+      random_ID <- sample(which(dat$Temperature %in% Temp_gra), num, replace = FALSE)
       
       # df_check <- dat[random_ID, ]
-      # while (!all(ele_gra %in% df_check$Temperature)) {
-      #   random_ID <- sample(which(dat$Temperature %in% ele_gra), num, replace = FALSE)
+      # while (!all(Temp_gra %in% df_check$Temperature)) {
+      #   random_ID <- sample(which(dat$Temperature %in% Temp_gra), num, replace = FALSE)
       #   df_check <- dat[random_ID, ]
       # }
       
       random_ID <- sort(random_ID)
       
       if (!any(apply(ID_num, 2, function(dup_det) identical(dup_det, random_ID)))) {
-        samp.list <- c(samp.list, list(dat[random_ID, ]))
+        samp.list <- c(samp.list, list(dat[random_ID, 1]))
         unselect.list <- c(unselect.list, list(dat[-random_ID, 1]))
       }
       
@@ -96,9 +96,10 @@ iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3,
   
   # (2) Calculate MER using "MER dataset" ---------------------------------------
   rho.out.tmp <- data.frame()
-  peak.rand.list <- c()
+  # peak.rand.list <- c()
   
   for (kk in 1:length(samp.rand.list)) {
+    
     samp.list.go <- samp.rand.list[[kk]]
     samp.list.go <- as.character(samp.list.go$ID)
     
@@ -115,6 +116,7 @@ iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3,
     peak.go <- colnames(data_ra_go2_keep)
     
     for (ii in 1:length(peak.go)) {
+      
       dat.tmp.long.i <- subset(dat.tmp.long, variable %in% peak.go[ii])
       
       if (nrow(dat.tmp.long.i) < 5) next
@@ -131,59 +133,67 @@ iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3,
       }
     }
     
-    ## collect peaks
-    peak.go.tmp <- list(peak.go); names(peak.go.tmp) <- kk
-    peak.rand.list <- c(peak.rand.list, peak.go.tmp)
+    # ## collect peaks
+    # peak.go.tmp <- list(peak.go); names(peak.go.tmp) <- kk
+    # peak.rand.list <- c(peak.rand.list, peak.go.tmp)
   }
   
   MER.out <- data.frame(MER = rho.out.tmp$spearman.cor, MER.pvalue = rho.out.tmp$spearman.cor.p, Permutation = rho.out.tmp$Permutation, peak = rho.out.tmp$peak)
   
   # (3) Calculate iCER using either ALL molecules with MERs or the molecules with significant MERs
-  CER.out <- data.frame()
-  
-  for (k in 1:length(peak.rand.list)) {   
+  iCER.out <- data.frame()
+
+  for (k in 1:length(samp.rand.list)) {
     # Filter based on whether significant_only is TRUE or FALSE
     if (significant_only) {
-      rho.peak.go0 <- subset(rho.out.tmp, Permutation == k & spearman.cor.p <= p_value_threshold)   # MERs from "MER dataset" with significant p-values
+      rho.peak.go0 <- subset(MER.out, Permutation == k & MER.pvalue <= p_value_threshold)   # MERs from "MER dataset" with significant p-values
     } else {
-      rho.peak.go0 <- subset(rho.out.tmp, Permutation == k)   # MERs from "MER dataset"
+      rho.peak.go0 <- subset(MER.out, Permutation == k)   # MERs from "MER dataset"
     }
     
-    rho.peak.go <- rho.peak.go0[, c("spearman.cor", "spearman.cor.p", "peak")]  
+    rho.peak.go <- rho.peak.go0[, c("MER", "MER.pvalue", "peak")]  
     peak.permu.go <- as.character(rho.peak.go$peak)
     
     unselect.permu.go <- unselect.list[[k]]
     unselect.permu.go <- as.character(unselect.permu.go$ID)
     
-    data_ra.go <- data_ra[unselect.permu.go, ]  # Relative abundance of molecules in each sample ("iCER dataset")
+    # Relative abundance of molecules in each sample ("iCER dataset")
+    data_ra.go <- data_ra[unselect.permu.go, ]  
     data_ra.go <- data_ra.go[, colSums(data_ra.go) > 0]
     
     peak.comm.list <- intersect(peak.permu.go, colnames(data_ra.go))
     
-    rho.go <- subset(rho.peak.go, peak %in% peak.comm.list)  
+    rho.go <- subset(rho.peak.go, peak %in% peak.comm.list)
     rownames(rho.go) <- rho.go$peak
-    rho.go <- rho.go[, "spearman.cor", drop=FALSE]
+    rho.go <- rho.go[, "MER", drop=FALSE]
     
-    ra.go <- data_ra.go[, rownames(rho.go)]   
+    ra.go <- data_ra.go[, rownames(rho.go)]
     ra.go <- ra.go[rowSums(ra.go) > 0, ]
     
-    CER.tmp <- FD::functcomp(rho.go, as.matrix(ra.go))   # iCER calculation
-    CER.tmp2 <- data.frame(CER.tmp, cDOM.IDs = rownames(CER.tmp))
+    # Compute the iCER for each sample in this permutation
+    iCER.tmp <- FD::functcomp(rho.go, as.matrix(ra.go))
+    iCER.tmp <- data.frame(ID = rownames(iCER.tmp), iCER = iCER.tmp[, 1])
+    
+    # Compute the weighted variance and standard deviation of iCER for each sample in this permutation
+    if (identical(rownames(rho.go), rownames(t(ra.go)))) {
+      x = rho.go[, "MER"]
+      wt <- as.data.frame(t(ra.go * 100))
+      
+      iCER.var.tmp <- sapply(wt, function(wt) wtd.var(x, wt))
+      iCER.sd.tmp <- sqrt(iCER.var.tmp)
+    }
     
     # Collect iCERs
-    CER.out.tmp <- data.frame(CER.tmp2, Permutation = k)
-    CER.out <- rbind(CER.out, CER.out.tmp)
+    iCER.out.tmp <- data.frame(iCER.tmp, iCER.var = iCER.var.tmp, iCER.sd = iCER.sd.tmp, Permutation = k)
+    rownames(iCER.out.tmp) = NULL
+    iCER.out <- rbind(iCER.out, iCER.out.tmp)
   }
   
-  CER.mean <- ddply(CER.out, .(cDOM.IDs), summarise, iCER=mean(spearman.cor))
-  
-  colnames(CER.out)[1:2] <- c("iCER","ID")
-  rownames(CER.out) <- NULL
-  colnames(CER.mean)[1] <- "ID"
+  iCER.mean <- ddply(iCER.out, .(ID), summarise, iCER = mean(iCER), iCER.var = mean(iCER.var), iCER.sd = mean(iCER.sd))
   
   if (significant_only) {
-    return(list(MER = MER.out, CER_sig_out = CER.out, CER_mean = CER.mean))
+    return(list(MER = MER.out, iCER_sig_permutation = iCER.out, iCER = iCER.mean))
   } else {
-    return(list(MER = MER.out, CER_all_out = CER.out, CER_mean = CER.mean))
+    return(list(MER = MER.out, iCER_all_permutation = iCER.out, iCER = iCER.mean))
   }
 }
