@@ -21,27 +21,27 @@ iCER(
 
 \item{envi}{A data frame containing environmental variables associated with each sample. The rows should correspond to the samples in \code{data_ra}, and it should include the variable(s) specified in \code{vars_list}.}
 
-\item{prop}{The proportion of samples selected in each permutation for MER (molecule-specific thermal response) calculation. This determines the 'MER dataset' size and affects the stability and variability of the results. Default: 0.8.}
+\item{prop}{The proportion of the dataset to be used for MER (Molecule-specific thermal responses) calculation. This controls how much of the original dataset is sampled for analysis. Default: 0.8.}
 
-\item{Temp_num}{The number of temperature levels randomly selected in each permutation.}
+\item{Temp_num}{The number of temperature levels to randomly select when generating independent data sets.}
 
-\item{end_n}{The minimum number of times each sample must appear in the 'iCER datasets' during random data partitioning. Increasing this value will result in a greater number of permutations. Default: 10.}
+\item{end_n}{Ensures that each sample appears at least this many times in the iCER datasets during random data partitioning. Increasing this value will result in a greater number of permutations. Default: 10.}
 
-\item{cutoff}{The minimum proportion of samples in the 'MER dataset' in which a molecule must appear to be retained; molecules below this cutoff are excluded from MER estimation. Default: 0.3.}
+\item{cutoff}{The threshold for retaining molecules observed in a specified proportion of the samples within the MER dataset. Molecules present in less than this proportion of samples will be excluded from the MER calculation. Default: 0.3.}
 
-\item{vars_list}{The name of environmental variables (such as 'Temperature') to be used for MER calculation. Default: 'Temperature'.}
+\item{vars_list}{The name or list of environmental variables (such as temperature) to be used in the correlation analysis. Default: 'Temperature'.}
 
-\item{significant_only}{Whether to compute iCER using only molecules with statistically significant MER values (p ≤ \code{p_value_threshold}). Default: FALSE.}
+\item{significant_only}{A boolean indicating whether to calculate iCER using only molecules with significant MERs. If set to TRUE, only molecules with significant correlations (based on \code{p_value_threshold}) are included. Default: FALSE.}
 
-\item{p_value_threshold}{The p-value threshold used to assess whether a molecule’s MER is statistically significant. Default: 0.05.}
+\item{p_value_threshold}{The significance level for determining whether a molecule’s correlation is considered significant. Default: 0.05}
 }
 \value{
 A list containing the following components:
 \itemize{
-\item \code{MER}: A data frame of MER values and p-values for molecules in each permutation.
-\item \code{iCER_all_permutation}: A data frame containing iCER, weighted variance (\code{iCER.var}), standard deviation (\code{iCER.sd}), and permutation index for each sample, computed from all molecules (if \code{significant_only = False}).
-\item \code{iCER_sig_permutation}: A data frame containing iCER, weighted variance (\code{iCER.var}), standard deviation (\code{iCER.sd}), and permutation index for each sample, computed from molecules with significant MERs (if \code{significant_only = TRUE}).
-\item \code{iCER}: A data frame containing the aggregated iCER results for each sample across all permutations, including the mean iCER, its weighted variance (\code{iCER.var}), and standard deviation (\code{iCER.sd}).
+\item \code{MER}: A data frame of MER values for molecules.
+\item \code{CER_all_out}: A data frame of iCER values calculated from all molecules (if \code{significant_only = FALSE}).
+\item \code{CER_sig_out}: A data frame of iCER values calculated from molecules with significant MERs (if \code{significant_only = TRUE}).
+\item \code{CER_mean}: A data frame of the mean iCER value for each sample.
 }
 }
 \description{
@@ -59,6 +59,6 @@ if(interactive()){
 }
 }
 \seealso{
+\code{\link[reshape2]{melt}}
 \code{\link[FD]{functcomp}}
-\code{\link[Hmisc]{wtd.var}}
 }
