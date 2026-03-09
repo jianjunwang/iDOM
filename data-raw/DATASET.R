@@ -21,6 +21,16 @@ dim(micro.data)
 load("data-raw/Transformation_Database.RData")
 dim(Transformation_Database)
 
+load("data-raw/mol.data.ra_habitat.Rdata")
+dim(data.ra.habi1)
+mol.data.ra.habi1 <- data.ra.habi1
+
+dim(data.ra.habi2)
+mol.data.ra.habi2 <- data.ra.habi2
+
+usethis::use_data(mol.data.ra.habi1, overwrite = TRUE)
+usethis::use_data(mol.data.ra.habi2, overwrite = TRUE)
+
 # write data in correct format to data folder ----
 usethis::use_data(mol.data, overwrite = TRUE)
 usethis::use_data(mol.trait, overwrite = TRUE)

@@ -13,7 +13,7 @@
 #' @importFrom vegan decostand
 #' @importFrom fundiversity fd_raoq
 
-commFD <- function(mol.data, mol.trait, trait_col = "AI_Mod"){
+commFD <- function(mol.data, mol.trait, trait.name = "AI_Mod"){
   library(fundiversity)
   library(vegan)
   
@@ -21,12 +21,12 @@ commFD <- function(mol.data, mol.trait, trait_col = "AI_Mod"){
   norm.mol.data = vegan::decostand(mol.data, method = "total")
   
   # Check if necessary columns exist
-  if (!(trait_col %in% colnames(mol.trait))) {
+  if (!(trait.name %in% colnames(mol.trait))) {
     stop(paste("Column", HtoC_ratio, "not found in the mol.trait"))
   }
   
   # Calculate functional diversity using the specified trait column
-  comm.FD = fundiversity::fd_raoq(sp_com = norm.mol.data, traits = mol.trait[, trait_col, drop = F])
+  comm.FD = fundiversity::fd_raoq(sp_com = norm.mol.data, traits = mol.trait[, trait.name, drop = F])
   
   return(comm.FD)
 }

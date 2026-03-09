@@ -4,7 +4,7 @@
 \alias{commFD}
 \title{Calculate Molecular Functional Diversity}
 \usage{
-commFD(mol.data, mol.trait, trait_col = "AI_Mod")
+commFD(mol.data, mol.trait, trait.name = "AI_Mod")
 }
 \arguments{
 \item{mol.data}{Data frame containing molecular data where rows represent different samples or conditions, and columns represent individual molecules. Default: mol.data.}
