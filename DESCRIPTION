@@ -25,4 +25,5 @@ Imports:
     phyloseq,
     picante,
     rlang,
-    vegan
+    vegan,
+    reshape2

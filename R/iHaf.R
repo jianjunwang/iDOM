@@ -3,12 +3,15 @@
 #' @description The iHaf function calculates the Indicator of Molecular Habitat Affinity (iHaf) based on molecular relative abundance data of habitat1 (data.ra.habi1) and habitat2 (data.ra.habi2).
 #' @param data.ra.habi1 A data frame containing the relative abundance of molecules, where rows represent samples and columns represent different molecules.
 #' @param data.ra.habi2 A data frame containing the relative abundance of molecules, where rows represent samples and columns represent different molecules.
-#' @return iHaf: A data frame of iHaf values for molecules.
+#' @return A list containing the following components:
+#' \describe{
+#'   \item{iHaf}{A data frame of iHaf values for molecules.}
+#'   \item{iHaf_wm_habi1}{A data frame of iHaf_wm values for samples of habitat1.}
+#'   \item{iHaf_wm_habi2}{A data frame of iHaf_wm values for samples of habitat2.}
+#' }
 #' @examples 
 #' \dontrun{
-#' if(interactive()){
-#'  iHaf(data.ra.habi1,data.ra.habi2)
-#'  }
+#' iHaf(data.ra.habi1, data.ra.habi2)
 #' }
 #' @rdname iHaf
 #' @export 
@@ -18,6 +21,7 @@ iHaf <- function (data.ra.habi1, data.ra.habi2)
   
   library(dplyr)
   library(metafor)
+  library(FD)
   
   data_ra <- bind_rows(data.ra.habi1, data.ra.habi2)
   data_ra[is.na(data_ra)] <- 0
@@ -33,7 +37,7 @@ iHaf <- function (data.ra.habi1, data.ra.habi2)
   
   i = 1
   for (i in 1:length(peak.list)){
-
+    
     dat.tmp = data.frame(
       peak = peak.list[i],
       m1 = mean(data_ra_habi1[, i], na.rm = T),
@@ -60,8 +64,14 @@ iHaf <- function (data.ra.habi1, data.ra.habi2)
     }
   }
   colnames(iHaf.out)[2] = "iHaf"
+  rownames(iHaf.out) <- iHaf.out$peak
   
-  return(iHaf.out)
+  iHaf_wm.habi1 <- functcomp(iHaf.out["iHaf"], as.matrix(data_ra_habi1))
+  iHaf_wm.habi2 <- functcomp(iHaf.out["iHaf"], as.matrix(data_ra_habi2))
+  colnames(iHaf_wm.habi1) <- "iHaf_wm"
+  colnames(iHaf_wm.habi2) <- "iHaf_wm"
+  
+  return(list(iHaf = iHaf.out, iHaf_wm_habi1 = iHaf_wm.habi1, iHaf_wm_habi2 = iHaf_wm.habi2))
   
 }
 

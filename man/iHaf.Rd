@@ -12,15 +12,18 @@ iHaf(data.ra.habi1, data.ra.habi2)
 \item{data.ra.habi2}{A data frame containing the relative abundance of molecules, where rows represent samples and columns represent different molecules.}
 }
 \value{
-iHaf: A data frame of iHaf values for molecules.
+A list containing the following components:
+\describe{
+\item{iHaf}{A data frame of iHaf values for molecules.}
+\item{iHaf_wm_habi1}{A data frame of iHaf_wm values for samples of habitat1.}
+\item{iHaf_wm_habi2}{A data frame of iHaf_wm values for samples of habitat2.}
+}
 }
 \description{
 The iHaf function calculates the Indicator of Molecular Habitat Affinity (iHaf) based on molecular relative abundance data of habitat1 (data.ra.habi1) and habitat2 (data.ra.habi2).
 }
 \examples{
 \dontrun{
-if(interactive()){
- iHaf(data.ra.habi1,data.ra.habi2)
- }
+iHaf(data.ra.habi1, data.ra.habi2)
 }
 }
