@@ -13,7 +13,7 @@
     
 molTrait <- function(report, ver = "1.1.0"){
   
-  library(ftmsRanalysis) # package found at https://github.com/EMSL-Computing/ftmsRanalysis
+  check_suggested("ftmsRanalysis", "molTrait") # package found at https://github.com/EMSL-Computing/ftmsRanalysis
   
   # Separating molecular information and peak data
   emeta = report[, c("Mass", "C", "H", "O", "N", "C13", "S", "P", "Na", "El_comp", 
@@ -29,25 +29,29 @@ molTrait <- function(report, ver = "1.1.0"){
   
   if (ver == "1.1.0") {
     ### Convert data and remove isotopic peaks ###
-    peak_icr = as.peakData(e_data = edata, f_data = fdata, e_meta = emeta, edata_cname = "Mass", mass_cname = "Mass",
-                           fdata_cname = "Sample_ID", c_cname = "C", h_cname = "H", o_cname = "O", n_cname = "N", s_cname = "S",
-                           p_cname = "P", isotopic_cname = "C13", isotopic_notation = "1")
+    peak_icr = ftmsRanalysis::as.peakData(
+      e_data = edata, f_data = fdata, e_meta = emeta, edata_cname = "Mass", mass_cname = "Mass",
+      fdata_cname = "Sample_ID", c_cname = "C", h_cname = "H", o_cname = "O", n_cname = "N", s_cname = "S",
+      p_cname = "P", isotopic_cname = "C13", isotopic_notation = "1"
+    )
   } else if (ver == "1.2.0"){
     ## Convert data and remove isotopic peaks ###
-    peak_icr = as.peakData(e_data = edata, f_data = fdata, e_meta = emeta, edata_cname = "Mass", mass_cname = "Mass",
-                           fdata_cname = "Sample_ID", element_col_names = list("C"="C", "H"="H", "O"="O", "N"="N", "S"="S", "P"="P"),
-                           isotopic_cname = "C13", isotopic_notation = "1")
+    peak_icr = ftmsRanalysis::as.peakData(
+      e_data = edata, f_data = fdata, e_meta = emeta, edata_cname = "Mass", mass_cname = "Mass",
+      fdata_cname = "Sample_ID", element_col_names = list("C"="C", "H"="H", "O"="O", "N"="N", "S"="S", "P"="P"),
+      isotopic_cname = "C13", isotopic_notation = "1"
+    )
   } else {
     stop("Unsupported ftmsRanalysis version: Please install version 1.1.0 or 1.2.0 to proceed.")
   }
   
   ### Calculating derived statistics ####
-  peak_icr = compound_calcs(peak_icr)
+  peak_icr = ftmsRanalysis::compound_calcs(peak_icr)
   
   ### Assigning compound classes ###
-  peak_icr = assign_class(peak_icr, boundary_set = "bs1")
-  peak_icr = assign_class(peak_icr, boundary_set = "bs2")
-  peak_icr = assign_class(peak_icr, boundary_set = "bs3")
+  peak_icr = ftmsRanalysis::assign_class(peak_icr, boundary_set = "bs1")
+  peak_icr = ftmsRanalysis::assign_class(peak_icr, boundary_set = "bs2")
+  peak_icr = ftmsRanalysis::assign_class(peak_icr, boundary_set = "bs3")
   
   # ## Write results ###
   # write.csv(peak_icr$e_data, paste("Processed_", Sample_Name, "_Data.csv", sep = ""), quote = F, row.names = F)
@@ -87,7 +91,7 @@ molTrait <- function(report, ver = "1.1.0"){
           numericalFormula[k, idx] = 1
         } else {
           numElement <- try(strtoi(substr(formula, s_index[i] + 1, s_index[i] + s_len[i] - 1)))
-          if (class(numElement)=="integer"){
+          if (inherits(numElement, "integer")){
             numericalFormula[k, idx] = numElement
           } else {
             print(paste("[ERROR] an unknown chemical element found:", token, "in", formula))

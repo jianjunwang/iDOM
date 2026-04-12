@@ -13,7 +13,8 @@ commProc(mol.data, mol.dendrogram, mol.group = NULL, group_col = "group")
 
 \item{mol.group}{Optional data frame containing group information for molecular data. Default: NULL.}
 
-\item{group_col}{Column name in \code{mol.group} indicating groups. This parameter is required if \code{mol.group} is provided.}
+\item{group_col}{Column name in \code{mol.group} indicating groups. This parameter is required if \code{mol.group} is provided.
+The row names of \code{mol.group} should identify the molecule columns in \code{mol.data}.}
 }
 \value{
 A list with the following elements:
@@ -22,4 +23,13 @@ A list with the following elements:
 }
 \description{
 This function quantifies the relative influences of deterministic and stochastic processes governing the assembly of DOM assemblages.
+}
+\references{
+A Hu, K-S Jang, F Meng, J Stegen, A J Tanentzap, M Choi, J T Lennon, J Soininen, and J Wang. 2022.
+Microbial and Environmental Processes Shape the Link between Organic Matter Functional Traits and Composition.
+\emph{Environmental Science & Technology}. \href{https://pubs.acs.org/doi/abs/10.1021/acs.est.2c01432}{https://doi.org/10.1021/acs.est.2c01432}; \href{https://jjwang.name/data/uploads/publications/Hu-et-al-2022-EST.pdf}{PDF}
+
+F Meng, A Hu, K-S Jang, and J Wang. 2025.
+iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry.
+\emph{mLife}. \url{https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002}
 }

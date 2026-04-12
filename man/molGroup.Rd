@@ -20,6 +20,10 @@ molGroup(
 
 \item{group}{The grouping criteria, Default: 'Reactivity_Activity'}
 
+\item{HtoC_ratio}{Column name giving the H/C ratio used when \code{group} is set to "Reactivity_Activity". Default: 1.5.}
+
+\item{Peak.trans.profile}{Optional transformation profile returned by \code{\link[=molTrans]{molTrans()}}. If \code{NULL}, the profile is computed inside the function.}
+
 \item{Trans_threshold}{The threshold for transformations, Default: c(1, 10)}
 }
 \value{

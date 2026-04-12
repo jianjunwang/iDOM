@@ -4,12 +4,77 @@
 \name{iDOM-package}
 \alias{iDOM}
 \alias{iDOM-package}
-\title{iDOM: What the Package Does (One Line, Title Case)}
+\title{iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry}
 \description{
-What the package does (one paragraph).
+The \code{iDOM} package provides tools for the statistical analysis of dissolved organic matter characterized by Fourier transform ion cyclotron resonance mass spectrometry (FT-ICR MS).
+}
+\references{
+A Hu, K-S Jang, F Meng, J Stegen, A J Tanentzap, M Choi, J T Lennon, J Soininen, and J Wang. 2022.
+Microbial and Environmental Processes Shape the Link between Organic Matter Functional Traits and Composition.
+\emph{Environmental Science & Technology}.
+\href{https://pubs.acs.org/doi/abs/10.1021/acs.est.2c01432}{https://doi.org/10.1021/acs.est.2c01432};
+\href{https://jjwang.name/data/uploads/publications/Hu-et-al-2022-EST.pdf}{PDF}
+
+A Hu, F Meng, A J Tanentzap, K-S Jang, and J Wang. 2023.
+Dark Matter Enhances Interactions within Both Microbes and Dissolved Organic Matter under Global Change.
+\emph{Environmental Science & Technology}.
+\url{https://pubs.acs.org/doi/10.1021/acs.est.2c05052};
+\href{https://jjwang.name/data/uploads/publications/Hu-et-al-2023-EST.pdf}{PDF}
+
+A Hu, M Choi, A J Tanentzap, J Liu, K-S Jang, J T Lennon, Y Liu, J Soininen, X Lu, Y Zhang, J Shen, and J Wang. 2022.
+Ecological networks of dissolved organic matter and microorganisms under global change.
+\emph{Nature Communications}.
+\url{https://www.nature.com/articles/s41467-022-31251-1}
+
+A Hu, K-S Jang, A J Tanentzap, W Zhao, J T Lennon, J Liu, M Li, J Stegen, M Choi, Y Lu, X Feng, and J Wang. 2024.
+Thermal responses of dissolved organic matter under global change.
+\emph{Nature Communications}.
+\url{https://www.nature.com/articles/s41467-024-44813-2}
+
+A Hu, L Han, X Lu, G Zhang, and J Wang. 2024. Global patterns and drivers of
+dissolved organic matter across Earth systems: Evidence from H/C and O/C
+ratios.
+\emph{Fundamental Research}.
+\doi{10.1016/j.fmre.2023.11.018}
+
+A Hu, Y Cui, S Bercovici, A J Tanentzap, J T Lennon, X Lin, Y Yang, Y Liu,
+H Osterholz, H Dong, Y Lu, N Jiao, and J Wang. 2024. Photochemical
+processes drive thermal responses of dissolved organic matter in the dark
+ocean.
+\emph{bioRxiv}. \doi{10.1101/2024.09.06.611638}
+
+Y Cui, A Hu, J Stegen, and J Wang. 2026.
+Habitat Affinity of Riverine Dissolved Organic Matter Linked to Molecular Traits.
+\emph{Global Change Biology}.
+\url{https://onlinelibrary.wiley.com/doi/10.1111/gcb.70736?af=R};
+\href{https://jjwang.name/data/uploads/publications/Cui-et-al-2026-GCB.pdf}{PDF}
+
+L Han, A Hu, H L Mzuka, X Chen, J Shen, and J Wang. 2025. Molecular
+properties of dissolved organic matter across Earth systems: A meta-analysis.
+\emph{Journal of Earth Science}.
+\url{https://link.springer.com/article/10.1007/s12583-024-0061-9}
+
+F Meng, A Hu, K-S Jang, and J Wang. 2025.
+iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry.
+\emph{mLife}. \url{https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002}
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/jianjunwang/iDOM}
+  \item \url{https://jjwang.name/}
+  \item Report bugs at \url{https://github.com/jianjunwang/iDOM/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Jianjun Wang \email{jjwang@niglas.ac.cn} (https://jjwang.name/)
+
+Authors:
+\itemize{
+  \item Ang Hu
+  \item Fanfan Meng
+}
 
 }
 \keyword{internal}

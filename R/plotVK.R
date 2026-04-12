@@ -20,14 +20,11 @@ plotVK <- function(data, HtoC_ratio, OtoC_ratio, title = "Van Krevelen Diagram")
   }
   
   # Create the base plot
-  p <- ggplot(data, aes(x = OtoC_ratio, y = HtoC_ratio))
-  
-  # Add points and theme
-  p <- p + geom_point() +
-    labs(x = "O/C Ratio", y = "H/C Ratio") +
-    theme_bw()
+  p <- ggplot2::ggplot(data, ggplot2::aes(x = .data[[OtoC_ratio]], y = .data[[HtoC_ratio]])) +
+    ggplot2::geom_point() +
+    ggplot2::labs(x = "O/C Ratio", y = "H/C Ratio") +
+    ggplot2::theme_bw()
   
   # Return the plot
   return(p)
 }
-

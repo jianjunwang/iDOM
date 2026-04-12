@@ -33,7 +33,7 @@ iCER(
 
 \item{significant_only}{A boolean indicating whether to calculate iCER using only molecules with significant MERs. If set to TRUE, only molecules with significant correlations (based on \code{p_value_threshold}) are included. Default: FALSE.}
 
-\item{p_value_threshold}{The significance level for determining whether a molecule’s correlation is considered significant. Default: 0.05}
+\item{p_value_threshold}{The significance level for determining whether a molecule's correlation is considered significant. Default: 0.05}
 }
 \value{
 A list containing the following components:
@@ -57,6 +57,15 @@ if(interactive()){
  result_sig <- iCER(data_ra, envi, significant_only = TRUE, p_value_threshold = 0.05)
  }
 }
+}
+\references{
+A Hu, K-S Jang, A J Tanentzap, W Zhao, J T Lennon, J Liu, M Li, J Stegen, M Choi, Y Lu, X Feng, and J Wang. 2024.
+Thermal responses of dissolved organic matter under global change.
+\emph{Nature Communications}. \url{https://www.nature.com/articles/s41467-024-44813-2}
+
+F Meng, A Hu, K-S Jang, and J Wang. 2025.
+iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry.
+\emph{mLife}. \url{https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002}
 }
 \seealso{
 \code{\link[FD]{functcomp}}

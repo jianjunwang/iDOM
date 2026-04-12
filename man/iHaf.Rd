@@ -27,3 +27,8 @@ The iHaf function calculates the Indicator of Molecular Habitat Affinity (iHaf) 
 iHaf(data.ra.habi1, data.ra.habi2)
 }
 }
+\references{
+Y Cui, A Hu, J Stegen, and J Wang. 2026.
+Habitat Affinity of Riverine Dissolved Organic Matter Linked to Molecular Traits.
+\emph{Global Change Biology}. \url{https://onlinelibrary.wiley.com/doi/10.1111/gcb.70736?af=R}; \href{https://jjwang.name/data/uploads/publications/Cui-et-al-2026-GCB.pdf}{PDF}
+}

@@ -11,9 +11,7 @@
 #' @export
 
 molTrans <- function(mol.data, mol.trait, error.term = 0.000010, type = "Dataset"){
-  
-  library(tidyverse)
-  
+
   options(digits = 10) # Significant figures in mass resolution data
   
   # Checking row names consistency
@@ -57,9 +55,7 @@ molTrans <- function(mol.data, mol.trait, error.term = 0.000010, type = "Dataset
       }
       
       # Removing differences that didn't match any transformation
-      Distance_Results = Distance_Results %>% 
-        filter(!Trans.name == -999)
-      head(Distance_Results)
+      Distance_Results = Distance_Results %>% dplyr::filter(!Trans.name == -999)
       
       # Building a larger peak.2.peak file
       peak.2.peak = rbind(peak.2.peak, Distance_Results)
@@ -69,7 +65,7 @@ molTrans <- function(mol.data, mol.trait, error.term = 0.000010, type = "Dataset
     }
     
     # Creating a num.trans file for network generation
-    peak.stack = as.data.frame(c(peak.2.peak$peak.x, peak.2.peak$peak.y)); head(peak.stack)
+    peak.stack = as.data.frame(c(peak.2.peak$peak.x, peak.2.peak$peak.y))
     peak.profile = as.data.frame(tapply(X = peak.stack[,1], INDEX = peak.stack[,1], FUN = 'length' )); dim(peak.profile)
     colnames(peak.profile) = 'num.trans.involved.in'
     peak.profile$peak = row.names(peak.profile)
@@ -101,18 +97,21 @@ molTrans <- function(mol.data, mol.trait, error.term = 0.000010, type = "Dataset
       one.sample.matrix = as.data.frame(t(mol.data[which(rownames(mol.data) == current.sample),,drop = F]))
       one.sample.matrix = data.frame(peak = rownames(one.sample.matrix),one.sample.matrix)
       
-      Sample_Peak_Mat <- one.sample.matrix %>% gather("sample", "value", -1) %>% filter(value > 0) %>% select(sample, peak)
+      Sample_Peak_Mat <- one.sample.matrix %>% 
+        tidyr::gather("sample", "value", -1) %>% 
+        dplyr::filter(value > 0) %>% 
+        dplyr::select(sample, peak)
       
       Distance_Results <- Sample_Peak_Mat %>% 
-        left_join(Sample_Peak_Mat, by = "sample",relationship = "many-to-many") %>% 
-        mutate(peak.x = as.numeric(peak.x),peak.y = as.numeric(peak.y)) %>% 
-        filter(peak.x > peak.y) %>% mutate(Dist = peak.x - peak.y) %>% 
-        select(sample,peak.x,peak.y,Dist)
+        dplyr::left_join(Sample_Peak_Mat, by = "sample",relationship = "many-to-many") %>% 
+        dplyr::mutate(peak.x = as.numeric(peak.x),peak.y = as.numeric(peak.y)) %>% 
+        dplyr::filter(peak.x > peak.y) %>% 
+        dplyr::mutate(Dist = peak.x - peak.y) %>% 
+        dplyr::select(sample,peak.x,peak.y,Dist)
       
       Distance_Results$Dist.plus = Distance_Results$Dist + error.term
       Distance_Results$Dist.minus = Distance_Results$Dist - error.term
       Distance_Results$Trans.name = -999
-      head(Distance_Results)
       
       dist.unique = unique(Distance_Results[,'sample']) #unique samples
       
@@ -122,17 +121,14 @@ molTrans <- function(mol.data, mol.trait, error.term = 0.000010, type = "Dataset
         Distance_Results$Trans.name[which(Distance_Results$Dist.plus >= mass.diff & Distance_Results$Dist.minus <= mass.diff)] = current.trans
       }
       
-      Distance_Results = Distance_Results %>% 
-        filter(!Trans.name == -999)
-      head(Distance_Results)
+      Distance_Results = Distance_Results %>% dplyr::filter(!Trans.name == -999)
       
       # find the number of transformations each peak was associated with
-      peak.stack = as.data.frame(c(Distance_Results$peak.x,Distance_Results$peak.y)); head(peak.stack)
+      peak.stack = as.data.frame(c(Distance_Results$peak.x,Distance_Results$peak.y))
       peak.profile = as.data.frame(tapply(X = peak.stack[,1],INDEX = peak.stack[,1],FUN = 'length' )); dim(peak.profile)
       colnames(peak.profile) = 'num.trans.involved.in'
       peak.profile$peak = row.names(peak.profile)
       peak.profile$sample = dist.unique
-      head(peak.profile)
       
       # "num.trans.involved.in" is zero 
       mol.trans0 = Sample_Peak_Mat[!(Sample_Peak_Mat$peak %in% rownames(peak.profile)),]
@@ -153,4 +149,3 @@ molTrans <- function(mol.data, mol.trait, error.term = 0.000010, type = "Dataset
 
   }
 }
-

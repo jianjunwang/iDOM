@@ -1,6 +1,6 @@
 
 #' @title The Indicator of Molecular Dark Matter Effects (iDME)
-#' @description The function calculates the iDME by measuring the percentage change in the average value of a specified network metric between the “KK” (known-known) and “DK” (dark-known) networks.
+#' @description The function calculates the iDME by measuring the percentage change in the average value of a specified network metric between the "KK" (known-known) and "DK" (dark-known) networks.
 #' @param mol.data Data frame containing molecular data where rows represent different samples or conditions, and columns represent individual molecules. Default: mol.data.
 #' @param mol.dark.matter Data frame containing molecular dark matter where rows represent different samples or conditions, and columns represent individual unclassified molecules. Default: mol.dark.matter.
 #' @param occu.rate The threshold for retaining DOM molecules observed in a specified proportion of the total samples. Default is 0.3.
@@ -15,22 +15,23 @@
 #'  \code{\link[igraph]{graph_from_adjacency_matrix}}, \code{\link[igraph]{V}}, \code{\link[igraph]{degree}}
 #'  \code{\link[bipartite]{specieslevel}}
 #'  \code{\link[dplyr]{rename}}
+#' @references A Hu, F Meng, A J Tanentzap, K-S Jang, and J Wang. 2023.
+#' Dark Matter Enhances Interactions within Both Microbes and Dissolved Organic Matter under Global Change.
+#' *Environmental Science & Technology*. [https://pubs.acs.org/doi/10.1021/acs.est.2c05052](https://pubs.acs.org/doi/10.1021/acs.est.2c05052); [PDF](https://jjwang.name/data/uploads/publications/Hu-et-al-2023-EST.pdf)
+#' 
+#' F Meng, A Hu, K-S Jang, and J Wang. 2025.
+#' iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry.
+#' *mLife*. [https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002](https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002)
+#' 
 #' @rdname iDME
 #' @export 
 #' @importFrom vegan decostand
-#' @importFrom SpiecEasi sparcc
 #' @importFrom igraph graph_from_adjacency_matrix V degree
 #' @importFrom bipartite specieslevel
 #' @importFrom dplyr rename
 
 iDME <- function(mol.data, mol.dark.matter, occu.rate = 0.3, bootstrap = 100, Network.size = 400, sparcc.R = NULL, sparcc.R.threshold = 0.3){
-
-  # Load necessary libraries
-  library(vegan)
-  library(SpiecEasi)
-  library(dplyr)
-  library(bipartite)
-  library(igraph)
+  check_suggested("SpiecEasi", "iDME")
   
   # Checking row names consistency
   if(!identical(rownames(mol.data), rownames(mol.dark.matter))){
@@ -117,11 +118,11 @@ iDME <- function(mol.data, mol.dark.matter, occu.rate = 0.3, bootstrap = 100, Ne
       }
 
       Net_Known_degree = Known.all.degree %>%
-        full_join(Known.Inner.degree,by = "nodes_id") %>%
-        full_join(Known.Inter.Degree,by = "nodes_id") %>%
+        dplyr::full_join(Known.Inner.degree,by = "nodes_id") %>%
+        dplyr::full_join(Known.Inter.Degree,by = "nodes_id") %>%
         dplyr::rename(KK_all.degree = Degree.x, KK_inner.degree = Degree.y, KK_inter.degree = Degree) %>%
-        select(KK_all.degree, KK_inner.degree, KK_inter.degree) %>%
-        summarise_all(mean, na.rm = TRUE)
+        dplyr::select(KK_all.degree, KK_inner.degree, KK_inter.degree) %>%
+        dplyr::summarise_all(mean, na.rm = TRUE)
 
       # DK_Networks -------------------------------------------------------------
       DK_Net.all = sparcc.R.thresh[c(colnames(Net.K1), colnames(Net.D)), c(colnames(Net.K1), colnames(Net.D))];dim(DK_Net.all)
@@ -155,11 +156,11 @@ iDME <- function(mol.data, mol.dark.matter, occu.rate = 0.3, bootstrap = 100, Ne
       }
 
       Net_DK_degree = DK.all.degree %>%
-        full_join(DK.Inner.degree,by = "nodes_id") %>%
-        full_join(DK.Inter.Degree,by = "nodes_id") %>%
+        dplyr::full_join(DK.Inner.degree,by = "nodes_id") %>%
+        dplyr::full_join(DK.Inter.Degree,by = "nodes_id") %>%
         dplyr::rename(DK_all.degree = Degree.x, DK_inner.degree = Degree.y, DK_inter.degree = Degree) %>%
-        select(DK_all.degree, DK_inner.degree, DK_inter.degree) %>%
-        summarise_all(mean, na.rm = TRUE)
+        dplyr::select(DK_all.degree, DK_inner.degree, DK_inter.degree) %>%
+        dplyr::summarise_all(mean, na.rm = TRUE)
 
       Net_degree = cbind(Net_Known_degree, Net_DK_degree, bootstrap = jj, sample = rownames(mol.data.sample))
 
@@ -173,13 +174,15 @@ iDME <- function(mol.data, mol.dark.matter, occu.rate = 0.3, bootstrap = 100, Ne
   }
   
   iDME.sample = Net_Degree %>% 
-    group_by(sample) %>% 
-    summarise(across(starts_with("KK_"), mean, na.rm = TRUE),
-              across(starts_with("DK_"), mean, na.rm = TRUE)) %>% 
-    mutate(iDME = (DK_all.degree/KK_all.degree) - 1,
-           iDME.intra = (DK_inner.degree-KK_inner.degree)/KK_all.degree,
-           iDME.inter = (DK_inter.degree-KK_inter.degree)/KK_all.degree) %>% 
-    select(sample, iDME, iDME.intra, iDME.inter)
+    dplyr::group_by(sample) %>% 
+    dplyr::summarise(
+      dplyr::across(tidyselect::starts_with("KK_"), mean, na.rm = TRUE),
+      dplyr::across(tidyselect::starts_with("DK_"), mean, na.rm = TRUE)
+    ) %>% 
+    dplyr::mutate(iDME = (DK_all.degree/KK_all.degree) - 1,
+                  iDME.intra = (DK_inner.degree-KK_inner.degree)/KK_all.degree,
+                  iDME.inter = (DK_inter.degree-KK_inter.degree)/KK_all.degree) %>% 
+    dplyr::select(sample, iDME, iDME.intra, iDME.inter)
     
     return(iDME.sample)
   

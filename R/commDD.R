@@ -14,9 +14,6 @@
 #' @importFrom picante pd mpd mntd
 
 commDD <- function(mol.data, mol.dendrogram, type = c("DD", "MPD", "MNTD")){
-  library(picante)
-  library(vegan)
-  
   # Normalize molecular data
   norm.mol.data <- vegan::decostand(mol.data, method = "total")
   
@@ -33,25 +30,25 @@ commDD <- function(mol.data, mol.dendrogram, type = c("DD", "MPD", "MNTD")){
   # Define a list of functions for dynamic call
   diversity_functions <- list(
     DD = function(data, dendrogram){
-      combined <- match.phylo.comm(dendrogram, data)
+      combined <- picante::match.phylo.comm(dendrogram, data)
       dendrogram.matched <- combined$phy
       data.matched <- combined$comm
       return(picante::pd(data.matched, dendrogram.matched)[,"PD"])
     },
     
     MPD = function(data, dendrogram){
-      combined <- match.phylo.comm(dendrogram, data)
+      combined <- picante::match.phylo.comm(dendrogram, data)
       dendrogram.matched <- combined$phy
       data.matched <- combined$comm
-      dendrogram.dist <- cophenetic(dendrogram.matched)
+      dendrogram.dist <- stats::cophenetic(dendrogram.matched)
       return(picante::mpd(data.matched, dendrogram.dist, abundance.weighted = T))
     },
     
     MNTD = function(data, dendrogram){
-      combined <- match.phylo.comm(dendrogram, data)
+      combined <- picante::match.phylo.comm(dendrogram, data)
       dendrogram.matched <- combined$phy
       data.matched <- combined$comm
-      dendrogram.dist <- cophenetic(dendrogram.matched)
+      dendrogram.dist <- stats::cophenetic(dendrogram.matched)
       return(picante::mntd(data.matched, dendrogram.dist, abundance.weighted = T)) 
     }
   )

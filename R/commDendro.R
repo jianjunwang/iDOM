@@ -4,18 +4,13 @@
 #' @param mol.trait A data frame containing molecular traits which must include a column for molecular formula ('MolForm') and may include other specified traits.
 #' @param type A character string specifying the type of dendrogram to generate: 'MCD' for Molecular Characterization Dendrogram, 'TD' for Transformation Dendrogram, and 'TWCD' for Transformed Weighted Characterization Dendrogram.
 #' @param trait_col A vector of character strings specifying the names of molecular traits to use in the analysis.
-#' @param peak.2.peak An optional data frame of peak-to-peak relationships, defaulting to `peak.2.peak`. It is used in the TD and TWCD methods to determine the connections based on transformations. Default: NULL
+#' @param mol.data An optional data frame of molecular data, with rows represent different samples or conditions, and columns represent individual molecules. Required when `type` is `"TD"` or `"TWCD"` and `peak.2.peak` is not supplied. Default: NULL.
+#' @param peak.2.peak An optional data frame of peak-to-peak relationships. It is used in the TD and TWCD methods to determine the connections based on transformations. Default: NULL.
 #' @return A dendrogram object representing the relationships among molecules.
 #' @rdname commDendro
 #' @export 
 
-commDendro <- function(mol.trait, type, trait_col, peak.2.peak = NULL) {
-  
-  library(igraph)
-  library(phangorn)
-  library(vegan)
-  library(picante)
-  
+commDendro <- function(mol.trait, type, trait_col, mol.data = NULL, peak.2.peak = NULL) {
   options(digits = 10)
   
   # Removing peaks that have no formula assignments
@@ -45,31 +40,33 @@ commDendro <- function(mol.trait, type, trait_col, peak.2.peak = NULL) {
     Mol.Info = as.data.frame(apply(Mol.Info, 2, scale), row.names = row.names(Mol.Info)) # Generating a distance matrix based upon the provided parameters
     
     # Converting the distance matrix into a tree
-    tree = as.phylo(hclust(vegdist(Mol.Info, "euclidean"), "average"))
+    tree = ape::as.phylo(stats::hclust(vegan::vegdist(Mol.Info, "euclidean"), "average"))
     
   } else if (type == "TD") {
-    
+    if (is.null(mol.data)) {
+      stop("'mol.data' is required when 'peak.2.peak' is NULL for type 'TD'.")
+    }
     if (is.null(peak.2.peak)) {
       peak.trans <- molTrans(mol.data = mol.data, mol.trait = mol.trait)
       peak.2.peak <- peak.trans$Peak.2.peak %>% 
-        select(peak.x, peak.y, Trans.name) %>% 
-        rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
-        mutate(weight = 1)
+        dplyr::select(peak.x, peak.y, Trans.name) %>% 
+        dplyr::rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
+        dplyr::mutate(weight = 1)
     } else {
       peak.2.peak <- peak.2.peak %>% 
-        select(peak.x, peak.y, Trans.name) %>% 
-        rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
-        mutate(weight = 1)
+        dplyr::select(peak.x, peak.y, Trans.name) %>% 
+        dplyr::rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
+        dplyr::mutate(weight = 1)
     }
 
     # Creating the network
-    net = graph_from_data_frame(d = peak.2.peak, directed = F)
+    net = igraph::graph_from_data_frame(d = peak.2.peak, directed = F)
     
     # The distances command is much better than the similarity measurement
-    net.dist = distances(net)
+    net.dist = igraph::distances(net)
     
     # Finding clusters and determining the distance in the largest
-    clus = clusters(net)
+    clus = igraph::clusters(net)
     max.clus = which(clus$csize %in% max(clus$csize)) # Finding the largest cluster
     max.clus = names(clus$membership)[which(clus$membership %in% max.clus)] # Finding the members of the largest cluster
  
@@ -79,37 +76,40 @@ commDendro <- function(mol.trait, type, trait_col, peak.2.peak = NULL) {
     net.dist = (net.dist-min(net.dist))/(max(net.dist)-min(net.dist))
     
     # Generate the UPGMA tree - a neighbor joining one will not work with this large of an object
-    tree = as.phylo(hclust(as.dist(net.dist), method = "average"))
+    tree = ape::as.phylo(stats::hclust(stats::as.dist(net.dist), method = "average"))
     
   } else if (type == "TWCD") {
     
     ### Pairwise molecular distance between peaks
     Mol.Info = as.data.frame(apply(Mol.Info, 2, scale), row.names = row.names(Mol.Info))
     # Generating a distance matrix based upon the provided parameters
-    mol.dist = as.matrix(vegdist(Mol.Info, "euclidean"))
+    mol.dist = as.matrix(vegan::vegdist(Mol.Info, "euclidean"))
     
     if (is.null(peak.2.peak)) {
+      if (is.null(mol.data)) {
+        stop("'mol.data' is required when 'peak.2.peak' is NULL for type 'TWCD'.")
+      }
       peak.trans <- molTrans(mol.data = mol.data, mol.trait = mol.trait)
       peak.2.peak <- peak.trans$Peak.2.peak %>% 
-        select(peak.x, peak.y, Trans.name) %>% 
-        rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
-        mutate(weight = 1)
+        dplyr::select(peak.x, peak.y, Trans.name) %>% 
+        dplyr::rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
+        dplyr::mutate(weight = 1)
     } else {
       peak.2.peak <- peak.2.peak %>% 
-        select(peak.x, peak.y, Trans.name) %>% 
-        rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
-        mutate(weight = 1)
+        dplyr::select(peak.x, peak.y, Trans.name) %>% 
+        dplyr::rename(from = peak.x, to = peak.y, type = Trans.name) %>% 
+        dplyr::mutate(weight = 1)
     }
     
     ### Determining transformation distance
     # Creating the network
-    net = graph_from_data_frame(d = peak.2.peak, directed = F)
+    net = igraph::graph_from_data_frame(d = peak.2.peak, directed = F)
     
     # The distances command is much better than the similarity measurement
-    net.dist = distances(net)
+    net.dist = igraph::distances(net)
     
     # Finding clusters and determining the distance in the largest
-    clus = clusters(net)
+    clus = igraph::clusters(net)
     max.clus = which(clus$csize %in% max(clus$csize)) # Finding the largest cluster
     max.clus = names(clus$membership)[which(clus$membership %in% max.clus)] # Finding the members of the largest cluster
     
@@ -129,7 +129,7 @@ commDendro <- function(mol.trait, type, trait_col, peak.2.peak = NULL) {
     weighted.dist = mol.dist.data*net.dist.data # Weighting the tree
     
     # Creating tree
-    tree = as.phylo(hclust(as.dist(weighted.dist), method = "average"))
+    tree = ape::as.phylo(stats::hclust(stats::as.dist(weighted.dist), method = "average"))
     
   } else {
     stop("Invalid type specified")

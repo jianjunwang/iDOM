@@ -9,7 +9,7 @@
 #' @param cutoff The threshold for retaining molecules observed in a specified proportion of the samples within the MER dataset. Molecules present in less than this proportion of samples will be excluded from the MER calculation. Default: 0.3.
 #' @param vars_list The name or list of environmental variables (such as temperature) to be used in the correlation analysis. Default: 'Temperature'.
 #' @param significant_only A boolean indicating whether to calculate iCER using only molecules with significant MERs. If set to TRUE, only molecules with significant correlations (based on `p_value_threshold`) are included. Default: FALSE.
-#' @param p_value_threshold The significance level for determining whether a molecule’s correlation is considered significant. Default: 0.05
+#' @param p_value_threshold The significance level for determining whether a molecule's correlation is considered significant. Default: 0.05
 #' @return A list containing the following components:
 #' \itemize{
 #'   \item `MER`: A data frame of MER values for molecules.
@@ -17,6 +17,14 @@
 #'   \item `CER_sig_out`: A data frame of iCER values calculated from molecules with significant MERs (if `significant_only = TRUE`).
 #'   \item `CER_mean`: A data frame of the mean iCER value for each sample.
 #' }
+#' @references A Hu, K-S Jang, A J Tanentzap, W Zhao, J T Lennon, J Liu, M Li, J Stegen, M Choi, Y Lu, X Feng, and J Wang. 2024. 
+#' Thermal responses of dissolved organic matter under global change. 
+#' *Nature Communications*. [https://www.nature.com/articles/s41467-024-44813-2](https://www.nature.com/articles/s41467-024-44813-2)
+#' 
+#' F Meng, A Hu, K-S Jang, and J Wang. 2025.
+#' iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry.
+#' *mLife*. [https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002](https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002)
+#' 
 #' @examples 
 #' \dontrun{
 #' if(interactive()){
@@ -34,19 +42,12 @@
 #' @importFrom FD functcomp
 
 iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3, vars_list = "Temperature", significant_only = FALSE, p_value_threshold = 0.05) {
-  
-  library(dplyr)
-  library(tidyverse)
-  library(reshape2)
-  library(plyr)
-  library(vegan)
-  library(FD)
-  
+
   # Prepare data
   envi$cDOM.IDs <- rownames(envi)
   envi_tmp <- envi[, vars_list, drop = FALSE]
   
-  dat <- tibble(ID = envi$cDOM.IDs, Temperature = envi[, vars_list])
+  dat <- data.frame(ID = envi$cDOM.IDs, Temperature = envi[, vars_list, drop = TRUE])
   
   # Function to generate independent data sets
   random_ID_select <- function(dat, prop, Temp_num, end_n) {
@@ -102,7 +103,7 @@ iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3,
     
     data_ra_go2 <- data_ra[samp.list.go, ]
     data_ra_go2 <- data_ra_go2[, colSums(data_ra_go2) > 0]
-    data_pa_go2 <- decostand(data_ra_go2, method = "pa")
+    data_pa_go2 <- vegan::decostand(data_ra_go2, method = "pa")
     data_ra_go2_keep <- data_ra_go2[, colSums(data_pa_go2) >= nrow(data_pa_go2) * cutoff]
     
     ## combining temperature
@@ -173,7 +174,7 @@ iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3,
     CER.out <- rbind(CER.out, CER.out.tmp)
   }
   
-  CER.mean <- ddply(CER.out, .(cDOM.IDs), summarise, iCER=mean(spearman.cor))
+  CER.mean <- plyr::ddply(CER.out, .(cDOM.IDs), plyr::summarise, iCER = mean(spearman.cor))
   
   colnames(CER.out)[1:2] <- c("iCER","ID")
   rownames(CER.out) <- NULL

@@ -4,14 +4,16 @@
 \alias{commFD}
 \title{Calculate Molecular Functional Diversity}
 \usage{
-commFD(mol.data, mol.trait, trait.name = "AI_Mod")
+commFD(mol.data, mol.trait, trait.name = c("AI_Mod"), type = c("CWM"))
 }
 \arguments{
 \item{mol.data}{Data frame containing molecular data where rows represent different samples or conditions, and columns represent individual molecules. Default: mol.data.}
 
 \item{mol.trait}{Data frame containing molecular trait data such as mass or other properties associated with each molecule. Default: mol.trait.}
 
-\item{trait.name}{The name of the trait column in the \code{mol.trait}. Default: "AI_Mod".}
+\item{trait.name}{Character vector giving one or more trait columns in \code{mol.trait}. Default: "AI_Mod".}
+
+\item{type}{Character vector specifying which functional diversity indices to return. Available options are \code{"RaoQ"}, \code{"FDis"}, \code{"FEve"}, \code{"FRic"}, \code{"FDiv"}, and \code{"CWM"}. Default: \code{"RaoQ"}.}
 }
 \value{
 A data frame containing functional diversity indices for each sample.

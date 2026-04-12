@@ -11,7 +11,6 @@
 #' @importFrom vegan decostand specnumber diversity estimateR
 
 commTD <- function(mol.data, type = c("Richness")) {
-  library(vegan)
   
   norm.mol.data = vegan::decostand(mol.data, method = "total")
   

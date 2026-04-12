@@ -11,13 +11,8 @@
 #' @rdname commDis
 #' @export 
 #' @importFrom vegan vegdist
-#' @importFrom phyloseq phyloseq UniFrac
 
 commDis <- function(mol.data, method = "braycurtis", mol.dendrogram = NULL) {
-  # Load required libraries inside the function
-  library(vegan)
-  library(phyloseq)
-  
   # Check method parameter
   if (!method %in% c("jaccard", "braycurtis", "unweighted_unifrac", "weighted_unifrac")) {
     stop("Unsupported dissimilarity method. Supported methods: 'jaccard', 'braycurtis', 'unweighted_unifrac', 'weighted_unifrac'.")
@@ -29,6 +24,8 @@ commDis <- function(mol.data, method = "braycurtis", mol.dendrogram = NULL) {
   } else if (method == "braycurtis") {
     dis <- vegan::vegdist(mol.data, method = "bray")
   } else if (method == "unweighted_unifrac" || method == "weighted_unifrac") {
+    check_suggested("phyloseq", "commDis")
+    
     # Check if mol.dendrogram is provided
     if (is.null(mol.dendrogram)) {
       stop("UniFrac dissimilarity calculation requires a dendrogram 'mol.dendrogram'.")
@@ -36,8 +33,8 @@ commDis <- function(mol.data, method = "braycurtis", mol.dendrogram = NULL) {
     
     # Convert mol.data to phyloseq object
     ps <- phyloseq::phyloseq(
-      otu_table(as.matrix(mol.data), taxa_are_rows = F),
-      phy_tree(mol.dendrogram)
+      phyloseq::otu_table(as.matrix(mol.data), taxa_are_rows = F),
+      phyloseq::phy_tree(mol.dendrogram)
     )
     
     # Calculate UniFrac dissimilarity

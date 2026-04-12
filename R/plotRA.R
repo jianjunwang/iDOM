@@ -9,30 +9,33 @@
 #' @export 
 
 plotRA <- function(mol.data, mol.group, group_col = "group") {
-  library(ggplot2)
-  library(dplyr)
-  library(vegan)
-  
+
   # Checking row names consistency
   if(!identical(colnames(mol.data), rownames(mol.group))){
     stop("Mismatch in row names between mol.data and mol.group")
   }
   
-  mol.data.RA = t(data.frame(decostand(mol.data, method = "total"), check.names = F))
+  mol.data.RA = t(data.frame(vegan::decostand(mol.data, method = "total"), check.names = FALSE))
   
-  merged_data <- cbind(mol.data.RA, mol.group[, group_col, drop = F])
+  merged_data <- cbind(mol.data.RA, group = mol.group[[group_col]])
   
   mean_abundance_by_group <- merged_data %>%
-    group_by(group) %>%
-    summarise(across(where(is.numeric), sum)) %>% 
-    gather(2:ncol(.), key = "Sample", value = "Relative_Abundance")
+    dplyr::group_by(group) %>%
+    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), sum)) %>%
+    tidyr::pivot_longer(
+      cols = -group,
+      names_to = "Sample",
+      values_to = "Relative_Abundance"
+    )
 
   # Create ggplot object
-  p <- ggplot(mean_abundance_by_group, aes(x = Sample, y = Relative_Abundance, fill = group)) +
-    geom_bar(stat = "identity", position = "stack") +
-    labs(x = "Group", y = "Relative_Abundance") +
-    theme_bw () +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  p <- ggplot2::ggplot(
+    mean_abundance_by_group, 
+    ggplot2::aes(x = Sample, y = Relative_Abundance, fill = group)) +
+    ggplot2::geom_bar(stat = "identity", position = "stack") +
+    ggplot2::labs(x = "Group", y = "Relative_Abundance") +
+    ggplot2::theme_bw () +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
   
   # Return the plot object
   return(p)

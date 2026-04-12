@@ -33,7 +33,16 @@ iDME(
 A data frame with calculated iDME, iDME.intra, and iDME.inter for each sample.
 }
 \description{
-The function calculates the iDME by measuring the percentage change in the average value of a specified network metric between the “KK” (known-known) and “DK” (dark-known) networks.
+The function calculates the iDME by measuring the percentage change in the average value of a specified network metric between the "KK" (known-known) and "DK" (dark-known) networks.
+}
+\references{
+A Hu, F Meng, A J Tanentzap, K-S Jang, and J Wang. 2023.
+Dark Matter Enhances Interactions within Both Microbes and Dissolved Organic Matter under Global Change.
+\emph{Environmental Science & Technology}. \url{https://pubs.acs.org/doi/10.1021/acs.est.2c05052}; \href{https://jjwang.name/data/uploads/publications/Hu-et-al-2023-EST.pdf}{PDF}
+
+F Meng, A Hu, K-S Jang, and J Wang. 2025.
+iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry.
+\emph{mLife}. \url{https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002}
 }
 \seealso{
 \code{\link[vegan]{decostand}}
