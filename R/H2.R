@@ -15,6 +15,17 @@
 #' For example, H2' is used to quantify the specialization of DOM-microbe associations at a network level. 
 #' Specifically, elevated H2' values convey that there is a high degree of specialization between DOM and microbes. 
 #' By contrast, lower H2' values reflect a more generalized bipartite network where different DOM molecules can be used by a large range of bacterial taxa.
+#' 
+#' This function requires the suggested package `SpiecEasi` when `sparcc.R` is not supplied.
+#' 
+#' @references A Hu, M Choi, A J Tanentzap, J Liu, K-S Jang, J T Lennon, Y Liu, J Soininen, X Lu, Y Zhang, J Shen, and J Wang. 2022. 
+#' Ecological networks of dissolved organic matter and microorganisms under global change. 
+#' *Nature Communications*. [https://www.nature.com/articles/s41467-022-31251-1](https://www.nature.com/articles/s41467-022-31251-1)
+#' 
+#' F Meng, A Hu, K-S Jang, and J Wang. 2025. 
+#' iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry. 
+#' *mLife*. [https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002](https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002)
+#' 
 #' @seealso 
 #'  \code{\link[vegan]{decostand}}
 #'  \code{\link[SpiecEasi]{sparcc}}
@@ -22,15 +33,17 @@
 #' @rdname H2
 #' @export 
 #' @importFrom vegan decostand
-#' @importFrom SpiecEasi sparcc
 #' @importFrom bipartite nullmodel networklevel
+#' @examples
+#' \donttest{
+#' if (requireNamespace("SpiecEasi", quietly = TRUE)) {
+#'   # H2(mol.data, micro.data)
+#' }
+#' }
+
 
 H2 <- function(mol.data, micro.data, occu.rate = 0.3, sparcc.R = NULL, sparcc.R.threshold = 0.3, N = 100, Null.model = "shuffle.web") {
-  
-  library(vegan)
-  library(bipartite)
-  library(SpiecEasi)
-  
+
   # Standardize and round microbial and DOM data
   norm.mol.data <- vegan::decostand(mol.data, method = "total")
   norm.mol.data.round <- as.matrix(round(100000 * norm.mol.data, 0))
@@ -47,18 +60,15 @@ H2 <- function(mol.data, micro.data, occu.rate = 0.3, sparcc.R = NULL, sparcc.R.
   
   # Filter columns based on occurrence threshold
   mol.micro.data.keep <- mol.micro.data[, colSums(mol.micro.data > 0) >= nrow(mol.micro.data) * occu.rate]
-  dim(mol.micro.data.keep)
   
   if (is.null(sparcc.R)) {
-    
+    check_suggested("SpiecEasi", "H2")
     sparcc.R <- SpiecEasi::sparcc(data = mol.micro.data.keep)
     sparcc.R <- sparcc.R$Cor
     colnames(sparcc.R) <- rownames(sparcc.R) <- colnames(mol.micro.data.keep)
     
     sparcc.R.thresh <- ifelse(abs(sparcc.R) >= sparcc.R.threshold, sparcc.R, 0)
-    
   }else{
-    
     # Check consistency of column and row names
     if (!identical(colnames(mol.micro.data.keep), rownames(sparcc.R))) {
       stop("Column names of mol.data.all.occu do not match row names of sparcc.R")
@@ -88,20 +98,20 @@ H2 <- function(mol.data, micro.data, occu.rate = 0.3, sparcc.R = NULL, sparcc.R.
       adj.cor.int = ifelse(DOM_Micro.int < 0, abs(DOM_Micro.int), 0) 
     }
     
-    adj.cor.int.class <- adj.cor.int[rowSums(adj.cor.int) > 0, colSums(adj.cor.int) > 0];dim(adj.cor.int.class)
+    adj.cor.int.class <- adj.cor.int[rowSums(adj.cor.int) > 0, colSums(adj.cor.int) > 0]
     
     nulls <- bipartite::nullmodel(adj.cor.int.class, N = N, method = Null.model)
 
     weighted.indices = c("H2")
     
     for (jj in 1:nrow(mol.micro.data.keep)) {
-      site_data <- mol.micro.data.keep[jj, , drop = FALSE];dim(site_data)
-      site_data <- site_data[,colSums(site_data) > 0,drop = F];dim(site_data)
+      site_data <- mol.micro.data.keep[jj, , drop = FALSE]
+      site_data <- site_data[,colSums(site_data) > 0,drop = F]
       
-      site.Micro <- site_data[, colnames(site_data) %in% colnames(micro.data), drop = F];dim(site.Micro)
-      site.DOM <- site_data[, colnames(site_data) %in% colnames(mol.data), drop = F];dim(site.DOM)
+      site.Micro <- site_data[, colnames(site_data) %in% colnames(micro.data), drop = F]
+      site.DOM <- site_data[, colnames(site_data) %in% colnames(mol.data), drop = F]
       
-      adj.cor.int.site = adj.cor.int.class[rownames(adj.cor.int.class) %in% colnames(site.DOM),colnames(adj.cor.int.class) %in% colnames(site.Micro)];dim(adj.cor.int.site)
+      adj.cor.int.site = adj.cor.int.class[rownames(adj.cor.int.class) %in% colnames(site.DOM),colnames(adj.cor.int.class) %in% colnames(site.Micro)]
       
       nulls.site = list()
       
@@ -109,14 +119,14 @@ H2 <- function(mol.data, micro.data, occu.rate = 0.3, sparcc.R = NULL, sparcc.R.
         colnames(nulls[[i]]) = colnames(adj.cor.int.class)
         rownames(nulls[[i]]) = rownames(adj.cor.int.class)
         
-        nulls.site[[i]] <- nulls[[i]][rownames(adj.cor.int.site),colnames(adj.cor.int.site)];dim(nulls.site[[i]])
+        nulls.site[[i]] <- nulls[[i]][rownames(adj.cor.int.site),colnames(adj.cor.int.site)]
       }
       
-      index.obs = bipartite::networklevel(adj.cor.int.site, weighted = T, index = weighted.indices)
-      index.null = unlist(sapply(nulls.site, bipartite::networklevel, weighted = T, index = weighted.indices))
+      index.obs = bipartite::networklevel(adj.cor.int.site, weighted = TRUE, index = weighted.indices)
+      index.null = unlist(sapply(nulls.site, bipartite::networklevel, weighted = TRUE, index = weighted.indices))
       
       index.rand.mean = mean(index.null)
-      index.rand.sd = sd(index.null)
+      index.rand.sd = stats::sd(index.null)
       index.ses = (index.obs - index.rand.mean) / index.rand.sd
       praw = sum(index.null > index.obs) / length(index.null)
       index.obs.p = ifelse(praw > 0.5, 1-praw, praw)
@@ -128,14 +138,8 @@ H2 <- function(mol.data, micro.data, occu.rate = 0.3, sparcc.R = NULL, sparcc.R.
       if (jj %% 5 == 0) {
         message(paste("Sample:", rownames(site_data), "; Null.model.type:", class))
       }
-      
     }
   }
   
   return(Index)
 }
-
-
-
-
-

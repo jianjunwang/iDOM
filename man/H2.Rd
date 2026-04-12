@@ -42,6 +42,24 @@ H2' is a network-level property to describe how much the two trophic levels are 
 For example, H2' is used to quantify the specialization of DOM-microbe associations at a network level.
 Specifically, elevated H2' values convey that there is a high degree of specialization between DOM and microbes.
 By contrast, lower H2' values reflect a more generalized bipartite network where different DOM molecules can be used by a large range of bacterial taxa.
+
+This function requires the suggested package \code{SpiecEasi} when \code{sparcc.R} is not supplied.
+}
+\examples{
+\donttest{
+if (requireNamespace("SpiecEasi", quietly = TRUE)) {
+  # H2(mol.data, micro.data)
+}
+}
+}
+\references{
+A Hu, M Choi, A J Tanentzap, J Liu, K-S Jang, J T Lennon, Y Liu, J Soininen, X Lu, Y Zhang, J Shen, and J Wang. 2022.
+Ecological networks of dissolved organic matter and microorganisms under global change.
+\emph{Nature Communications}. \url{https://www.nature.com/articles/s41467-022-31251-1}
+
+F Meng, A Hu, K-S Jang, and J Wang. 2025.
+iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry.
+\emph{mLife}. \url{https://onlinelibrary.wiley.com/doi/10.1002/mlf2.70002}
 }
 \seealso{
 \code{\link[vegan]{decostand}}
