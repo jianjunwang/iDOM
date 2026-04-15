@@ -2,18 +2,14 @@ Package: iDOM
 Title: Analysis Tools of Dissolved Organic Matter Characterized by High-Resolution Mass Spectrometry
 Version: 0.1.0
 Authors@R: c(
-    person("Jianjun", "Wang", email = "jjwang@niglas.ac.cn", role = c("aut", "cre"),
-           comment = c(URL = "https://jjwang.name/")),
+    person("Jianjun", "Wang", email = "jjwang@niglas.ac.cn", role = c("aut", "cre")),
     person("Ang", "Hu", role = "aut"),
     person("Fanfan", "Meng", role = "aut")
   )
-Description: Provides tools for basic and advanced statistical analyses and visualization of dissolved organic matter (DOM) characterized by
-    Fourier transform ion cyclotron resonance mass spectrometry (FT-ICR MS). 
-    Supports analyses of molecular composition, molecular traits, molecular transformations, diversity, dendrogram structure, assembly
-    processes, environmental responses, and DOM-microbe associations, and can integrate environmental and microbial data to explore
-    abiotic and biotic drivers of DOM variation, as described in Meng et al. (2025) <doi:10.1002/mlf2.70002>. 
-    The 'molTrait()' function conditionally uses the suggested package 'ftmsRanalysis' for FT-MS data preprocessing; it is available from
-    <https://github.com/EMSL-Computing/ftmsRanalysis>.
+Description: Provides statistical analysis and visualization tools for dissolved organic matter characterized by high-resolution mass spectrometry.
+    The package's key features include basic analyses, such as the calculation of molecular traits, the assignment of molecular classes, and the calculation of chemical diversity and dissimilarity. 
+    It also offers advanced analyses to quantify the assembly processes of DOM composition, the compositional-level environmental responses of DOM, the effects of dark matter, and the specialization of DOM-microbe associations. 
+    Additionally, iDOM provides visualization functions, such as van Krevelen diagrams to visualize FT-ICR MS data, and composition plots to show the relative abundances of different molecular classes. 
 License: CC BY-NC-SA 4.0
 URL: https://github.com/jianjunwang/iDOM, https://jjwang.name/
 BugReports: https://github.com/jianjunwang/iDOM/issues
@@ -21,7 +17,6 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
-    ftmsRanalysis,
     phyloseq,
     SpiecEasi,
     testthat (>= 3.0.0)

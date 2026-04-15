@@ -68,7 +68,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Jianjun Wang \email{jjwang@niglas.ac.cn} (https://jjwang.name/)
+\strong{Maintainer}: Jianjun Wang \email{jjwang@niglas.ac.cn}
 
 Authors:
 \itemize{
