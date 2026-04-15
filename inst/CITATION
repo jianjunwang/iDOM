@@ -1,0 +1,26 @@
+citHeader(
+  "To cite iDOM in publications, please use:"
+)
+
+bibentry(
+  bibtype = "Article",
+  title = "iDOM: Statistical analysis of dissolved organic matter characterized by high-resolution mass spectrometry",
+  author = c(
+    person("Fanfan", "Meng"),
+    person("Ang", "Hu"),
+    person("Kwang-Soon", "Jang"),
+    person("Jianjun", "Wang")
+  ),
+  journal = "mLife",
+  year = "2025",
+  volume = "4",
+  pages = "319--331",
+  doi = "10.1002/mlf2.70002",
+  textVersion = paste(
+    "Meng F, Hu A, Jang K-S, Wang J. 2025.",
+    "iDOM: Statistical analysis of dissolved organic matter characterized by",
+    "high-resolution mass spectrometry.",
+    "mLife 4:319-331.",
+    "https://doi.org/10.1002/mlf2.70002"
+  )
+)
