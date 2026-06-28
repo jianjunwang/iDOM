@@ -73,7 +73,7 @@ iCER <- function(data_ra, envi, prop = 0.80, Temp_num, end_n = 10, cutoff = 0.3,
       
       if (!any(apply(ID_num, 2, function(dup_det) identical(dup_det, random_ID)))) {
         samp.list <- c(samp.list, list(dat[random_ID, ]))
-        unselect.list <- c(unselect.list, list(dat[-random_ID, 1]))
+        unselect.list <- c(unselect.list, list(dat[-random_ID, 1, drop = FALSE]))
       }
       
       ID_num <- cbind(ID_num, random_ID)
